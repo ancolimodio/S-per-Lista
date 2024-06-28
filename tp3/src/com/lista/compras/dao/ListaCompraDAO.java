@@ -78,7 +78,8 @@ public class ListaCompraDAO {
                         rs.getInt("id"),
                         rs.getString("nombre"),
                         rs.getInt("cantidad"),
-                        rs.getString("categoria")
+                        rs.getString("categoria"),
+                        rs.getBoolean("comprado")
                     );
                     productos.add(producto);
                 }
@@ -108,6 +109,27 @@ public class ListaCompraDAO {
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+    }
+    
+    public void actualizarEstadoProducto(int idProducto, boolean comprado) throws SQLException {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+
+        try {
+            conn = DatabaseConnection.getConnection();
+            String sql = "UPDATE producto SET comprado = ? WHERE id = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setBoolean(1, comprado);
+            stmt.setInt(2, idProducto);
+            stmt.executeUpdate();
+        } finally {
+            if (stmt != null) {
+                stmt.close();
+            }
+            if (conn != null) {
+                conn.close();
+            }
         }
     }
 }

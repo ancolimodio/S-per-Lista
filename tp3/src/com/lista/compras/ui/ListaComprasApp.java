@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.SQLException;
 import java.util.List;
 
 public class ListaComprasApp {
@@ -157,7 +158,7 @@ public class ListaComprasApp {
                 if (!nombreProducto.isEmpty() && !cantidadStr.isEmpty() && categoria != null) {
                     try {
                         int cantidad = Integer.parseInt(cantidadStr);
-                        Producto nuevoProducto = new Producto(0, nombreProducto, cantidad, categoria);
+                        Producto nuevoProducto = new Producto(0, nombreProducto, cantidad, categoria,false);
                         listaCompraDAO.agregarProducto(listaCompra.getId(), nuevoProducto);
                         listModel.addElement(nuevoProducto);
                         JOptionPane.showMessageDialog(agregarProductoFrame, "Producto agregado exitosamente!");
@@ -171,6 +172,7 @@ public class ListaComprasApp {
             }
         });
     }
+    
     private void mostrarFormularioEditarProducto(Producto producto, DefaultListModel<Producto> listModel) {
         JFrame editarProductoFrame = new JFrame("Editar Producto");
         editarProductoFrame.setSize(300, 200);
@@ -184,6 +186,7 @@ public class ListaComprasApp {
         JComboBox<String> categoriaComboBox = new JComboBox<>(categorias);
         categoriaComboBox.setSelectedItem(producto.getCategoria());
         JButton guardarButton = new JButton("Guardar");
+        JButton marcarCompradoButton = new JButton("Marcar como Comprado");
 
         panel.add(nombreLabel);
         panel.add(nombreTextField);
@@ -191,8 +194,8 @@ public class ListaComprasApp {
         panel.add(cantidadTextField);
         panel.add(categoriaLabel);
         panel.add(categoriaComboBox);
-        panel.add(new JLabel());
         panel.add(guardarButton);
+        panel.add(marcarCompradoButton);
 
         editarProductoFrame.add(panel);
         editarProductoFrame.setVisible(true);
@@ -221,6 +224,22 @@ public class ListaComprasApp {
                 }
             }
         });
+        
+        marcarCompradoButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                Producto productoSeleccionado = producto;
+                if (productoSeleccionado != null) {
+                    productoSeleccionado.setComprado(true);
+                    try {
+                        listaCompraDAO.actualizarEstadoProducto(productoSeleccionado.getId(), true);
+                        listModel.setElementAt(producto, listModel.indexOf(producto));
+                        JOptionPane.showMessageDialog(editarProductoFrame, "Producto editado exitosamente!");
+                        editarProductoFrame.dispose();
+                    } catch (SQLException ex) {
+                        JOptionPane.showMessageDialog(editarProductoFrame, "Error al actualizar estado del producto: " + ex.getMessage());
+                    }
+            }
+            }});
     }
 
     private void mostrarConfirmacionEliminarProducto(Producto producto, DefaultListModel<Producto> listModel) {
