@@ -18,18 +18,40 @@ public class ListaCompra {
         return id;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public String getNombre() {
         return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 
     public List<Producto> getProductos() {
         return productos;
     }
+    
+    public void setProductos(List<Producto> productos) {
+        this.productos = productos;
+    }
+    
     // Metodo para agregar un producto a la lista
     public void agregarProducto(Producto producto) {
         productos.add(producto);
     }
-    // Metodo para eliminar un producto de la lista
+    // Metodo para editar un producto de la lista
+    public void editarProducto(Producto producto) {
+        for (int i = 0; i < productos.size(); i++) {
+            if (productos.get(i).getNombre().equals(producto.getNombre())) {
+                productos.set(i, producto);
+                break;
+            }
+        }
+    }
+    // Metodo para e un producto de la lista
     public void eliminarProducto(Producto producto) {
         productos.remove(producto);
     }
